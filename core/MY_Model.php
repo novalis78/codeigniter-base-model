@@ -567,7 +567,7 @@ class MyModel
         $where = func_get_args();
         $this->_set_where($where);
 
-        return $this->_database->count_all_results($this->_table);
+        return $this->_database->countAllResults($this->_table);
     }
 
     /**
@@ -580,7 +580,7 @@ class MyModel
             $this->_database->where($this->soft_delete_key, (bool)$this->_temporary_only_deleted);
         }
 
-        return $this->_database->count_all($this->_table);
+        return $this->_database->countAll($this->_table);
     }
 
     /**
