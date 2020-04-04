@@ -4,10 +4,9 @@ use CodeIgniter\Model;
 
 /**
  * A base model with a series of CRUD functions (powered by CI's query builder),
- * validation-in-model support, event callbacks and more. Original by Jamie Rumbelow
- * updated for CI4 by Lennart Lopin
+ * validation-in-model support, event callbacks and more.
  *
- * @link https://github.com/novalis78/codeigniter-base-model
+ * @link http://github.com/jamierumbelow/codeigniter-base-model
  * @copyright Copyright (c) 2012, Jamie Rumbelow <http://jamierumbelow.net>
  * @copyright Copyright (c) 2020, Lennart Lopin <http://lennartlopin.com>
  */
@@ -759,12 +758,12 @@ class MyModel
         {
             foreach ($criteria as $key => $value)
             {
-                $this->_database->order_by($key, $value);
+                $this->_database->orderBy($key, $value);
             }
         }
         else
         {
-            $this->_database->order_by($criteria, $order);
+            $this->_database->orderBy($criteria, $order);
         }
         return $this;
     }
@@ -960,7 +959,7 @@ class MyModel
      */
     protected function _return_type($multi = FALSE)
     {
-        $method = ($multi) ? 'getResultArray' : 'getResult';
-        return $this->_temporary_return_type == 'array' ? $method . '_array' : $method;
+        $method = ($multi) ? 'getResult' : 'getRow';
+        return $this->_temporary_return_type == 'array' ? $method . 'Array' : $method;
     }
 }
