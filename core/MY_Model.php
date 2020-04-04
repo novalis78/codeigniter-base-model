@@ -4,9 +4,10 @@ use CodeIgniter\Model;
 
 /**
  * A base model with a series of CRUD functions (powered by CI's query builder),
- * validation-in-model support, event callbacks and more.
+ * validation-in-model support, event callbacks and more. Original by Jamie Rumbelow
+ * updated for CI4 by Lennart Lopin
  *
- * @link http://github.com/jamierumbelow/codeigniter-base-model
+ * @link https://github.com/novalis78/codeigniter-base-model
  * @copyright Copyright (c) 2012, Jamie Rumbelow <http://jamierumbelow.net>
  * @copyright Copyright (c) 2020, Lennart Lopin <http://lennartlopin.com>
  */
