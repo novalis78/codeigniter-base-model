@@ -1,19 +1,17 @@
-DEPRECATED: codeigniter-base-model
+CodeIgniter4 version: codeigniter-base-model
 =====================================
 
-**Deprecated since I no longer use CodeIgniter. If anybody would like to take over maintainence of this repo, please get in touch.**
+This is jamierumbelow/codeigniter-base-model original CI model base class, updated for CI4.
 
-[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/) [![Build Status](https://secure.travis-ci.org/jamierumbelow/codeigniter-base-model.png?branch=master)](http://travis-ci.org/jamierumbelow/codeigniter-base-model)
-
-My CodeIgniter Base Model is an extended CI_Model class to use in your CodeIgniter applications. It provides a full CRUD base to make developing database interactions easier and quicker, as well as an event-based observer system, in-model data validation, intelligent table name guessing and soft delete.
+This CodeIgniter Base Model is an extended Model class to use in your CodeIgniter applications. It provides a full CRUD base to make developing database interactions easier and quicker, as well as an event-based observer system, in-model data validation, intelligent table name guessing and soft delete.
 
 Synopsis
 --------
 
 ```php
-class Post_model extends MY_Model { }
+class PostModel extends MyModel { }
 
-$this->load->model('post_model', 'post');
+$this->post = model('Apps\Models\PostModel');
 
 $this->post->get_all();
 
@@ -34,35 +32,31 @@ $this->post->delete(1);
 Installation/Usage
 ------------------
 
-Download and drag the MY\_Model.php file into your _application/core_ folder. CodeIgniter will load and initialise this class automatically for you.
+Download and drag the MyModel.php file into your app/Models folder. CodeIgniter will load and initialise this class automatically for you.
 
-Extend your model classes from `MY_Model` and all the functionality will be baked in automatically.
+Extend your model classes from `MyModel` and all the functionality will be baked in automatically.
 
 Naming Conventions
 ------------------
 
-This class will try to guess the name of the table to use, by finding the plural of the class name. 
+This class will assume your database table name from the class name. 
 
 For instance:
 
-    class Post_model extends MY_Model { }
+    class PostModel extends MyModel { }
 
-...will guess a table name of `posts`. It also works with `_m`:
-
-    class Book_m extends MY_Model { }
-
-...will guess `books`.
+...will guess a table name of `post`.
 
 If you need to set it to something else, you can declare the _$\_table_ instance variable and set it to the table name:
 
-    class Post_model extends MY_Model
+    class PostModel extends MyModel
     {
         public $_table = 'blogposts';
     }
 
 Some of the CRUD functions also assume that your primary key ID column is called _'id'_. You can overwrite this functionality by setting the _$primary\_key_ instance variable:
 
-    class Post_model extends MY_Model
+    class PostModel extends MyModel
     {
         public $primary_key = 'post_id';
     }
@@ -70,7 +64,7 @@ Some of the CRUD functions also assume that your primary key ID column is called
 Callbacks/Observers
 -------------------
 
-There are many times when you'll need to alter your model data before it's inserted or returned. This could be adding timestamps, pulling in relationships or deleting dependent rows. The MVC pattern states that these sorts of operations need to go in the model. In order to facilitate this, **MY_Model** contains a series of callbacks/observers -- methods that will be called at certain points.
+There are many times when you'll need to alter your model data before it's inserted or returned. This could be adding timestamps, pulling in relationships or deleting dependent rows. The MVC pattern states that these sorts of operations need to go in the model. In order to facilitate this, **MyModel** contains a series of callbacks/observers -- methods that will be called at certain points.
 
 The full list of observers are as follows:
 
@@ -86,7 +80,7 @@ The full list of observers are as follows:
 These are instance variables usually defined at the class level. They are arrays of methods on this class to be called at certain points. An example:
 
 ```php
-class Book_model extends MY_Model
+class BookModel extends MyModel
 {
     public $before_create = array( 'timestamps' );
     
@@ -115,7 +109,7 @@ Observers can also take parameters in their name, much like CodeIgniter's Form V
 Validation
 ----------
 
-MY_Model uses CodeIgniter's built in form validation to validate data on insert.
+MyModel uses CodeIgniter's built in form validation to validate data on insert.
 
 You can enable validation by setting the `$validate` instance to the usual form validation library rules array:
 
@@ -154,11 +148,11 @@ Protected Attributes
 
 If you're lazy like me, you'll be grabbing the data from the form and throwing it straight into the model. While some of the pitfalls of this can be avoided with validation, it's a very dangerous way of entering data; any attribute on the model (any column in the table) could be modified, including the ID.
 
-To prevent this from happening, MY_Model supports protected attributes. These are columns of data that cannot be modified.
+To prevent this from happening, MyModel supports protected attributes. These are columns of data that cannot be modified.
 
 You can set protected attributes with the `$protected_attributes` array:
 
-    class Post_model extends MY_Model
+    class PostModel extends MyModel
     {
         public $protected_attributes = array( 'id', 'hash' );
     }
@@ -176,9 +170,9 @@ Now, when `insert` or `update` is called, the attributes will automatically be r
 Relationships
 -------------
 
-**MY\_Model** now has support for basic _belongs\_to_ and has\_many relationships. These relationships are easy to define:
+**MyModel** now has support for basic _belongs\_to_ and has\_many relationships. These relationships are easy to define:
 
-    class Post_model extends MY_Model
+    class PostModel extends MyModel
     {
         public $belongs_to = array( 'author' );
         public $has_many = array( 'comments' );
@@ -186,12 +180,12 @@ Relationships
 
 It will assume that a MY_Model API-compatible model with the singular relationship's name has been defined. By default, this will be `relationship_model`. The above example, for instance, would require two other models:
 
-    class Author_model extends MY_Model { }
-    class Comment_model extends MY_Model { }
+    class AuthorModel extends MyModel { }
+    class CommentModel extends MyModel { }
 
 If you'd like to customise this, you can pass through the model name as a parameter:
 
-    class Post_model extends MY_Model
+    class PostModel extends MyModel
     {
         public $belongs_to = array( 'author' => array( 'model' => 'author_m' ) );
         public $has_many = array( 'comments' => array( 'model' => 'model_comments' ) );
@@ -224,7 +218,7 @@ The primary key can also be configured. For _belongs\_to_ calls, the related key
 
 To change this, use the `primary_key` value when configuring:
 
-    class Post_model extends MY_Model
+    class PostModel extends MyModel
     {
         public $belongs_to = array( 'author' => array( 'primary_key' => 'post_author_id' ) );
         public $has_many = array( 'comments' => array( 'primary_key' => 'parent_post_id' ) );
@@ -237,7 +231,7 @@ By default, MY_Model is setup to return objects using CodeIgniter's QB's `row()`
 
 If you'd like all your calls to use the array methods, you can set the `$return_type` variable to `array`.
 
-    class Book_model extends MY_Model
+    class BookModel extends MyModel
     {
         protected $return_type = 'array';
     }
@@ -258,18 +252,18 @@ If you enable soft deleting, the deleted row will be marked as `deleted` rather 
 
 Take, for example, a `Book_model`:
 
-    class Book_model extends MY_Model { }
+    class BookModel extends MyModel { }
 
 We can enable soft delete by setting the `$this->soft_delete` key:
 
-    class Book_model extends MY_Model
+    class BookModel extends MyModel
     { 
         protected $soft_delete = TRUE;
     }
 
 By default, MY_Model expects a `TINYINT` or `INT` column named `deleted`. If you'd like to customise this, you can set `$soft_delete_key`:
 
-    class Book_model extends MY_Model
+    class BookModel extends MyModel
     { 
         protected $soft_delete = TRUE;
         protected $soft_delete_key = 'book_deleted_status';
@@ -297,7 +291,7 @@ Built-in Observers
 
 The timestamps (MySQL compatible) `created_at` and `updated_at` are now available as built-in observers:
 
-    class Post_model extends MY_Model
+    class PostModel extends MyModel
     {
         public $before_create = array( 'created_at', 'updated_at' );
         public $before_update = array( 'updated_at' );
@@ -305,7 +299,7 @@ The timestamps (MySQL compatible) `created_at` and `updated_at` are now availabl
 
 **MY_Model** also contains serialisation observers for serialising and unserialising native PHP objects. This allows you to pass complex structures like arrays and objects into rows and have it be serialised automatically in the background. Call the `serialize` and `unserialize` observers with the column name(s) as a parameter:
 
-    class Event_model extends MY_Model
+    class EventModel extends MyModel
     {
         public $before_create = array( 'serialize(seat_types)' );
         public $before_update = array( 'serialize(seat_types)' );
@@ -322,7 +316,7 @@ You can specify a database connection on a per-model basis by declaring the _$\_
 See ["Connecting to your Database"](http://ellislab.com/codeigniter/user-guide/database/connecting.html) for more information.
 
 ```php
-class Post_model extends MY_Model
+class PostModel extends MyModel
 {
     public $_db_group = 'group_name';
 }
@@ -331,7 +325,7 @@ class Post_model extends MY_Model
 Unit Tests
 ----------
 
-MY_Model contains a robust set of unit tests to ensure that the system works as planned.
+MyModel contains a robust set of unit tests to ensure that the system works as planned.
 
 Install the testing framework (PHPUnit) with Composer:
 
@@ -343,7 +337,7 @@ You can then run the tests using the `vendor/bin/phpunit` binary and specify the
     $ vendor/bin/phpunit
 
 
-Contributing to MY_Model
+Contributing to MyModel
 ------------------------
 
 If you find a bug or want to add a feature to MY_Model, great! In order to make it easier and quicker for me to verify and merge changes in, it would be amazing if you could follow these few basic steps:
@@ -356,7 +350,7 @@ If you find a bug or want to add a feature to MY_Model, great! In order to make 
 6. Send me a pull request!
 
 
-Other Documentation
+Other Documentation on the original My_Model
 -------------------
 
 * My book, The CodeIgniter Handbook, talks about the techniques used in MY_Model and lots of other interesting useful stuff. [Get a copy now.](https://efendibooks.com/books/codeigniter-handbook/vol-1)
@@ -366,6 +360,8 @@ Other Documentation
 
 Changelog
 ---------
+**Version 4.0.0**
+* Added basic support for CodeIgniter4
 
 **Version 2.0.0**
 * Added support for soft deletes
