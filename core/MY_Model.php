@@ -1,13 +1,17 @@
-<?php
+<?php namespace App\Models;
+
+use CodeIgniter\Model;
+
 /**
  * A base model with a series of CRUD functions (powered by CI's query builder),
  * validation-in-model support, event callbacks and more.
  *
  * @link http://github.com/jamierumbelow/codeigniter-base-model
  * @copyright Copyright (c) 2012, Jamie Rumbelow <http://jamierumbelow.net>
+ * @copyright Copyright (c) 2020, Lennart Lopin <http://lennartlopin.com>
  */
 
-class MY_Model extends CI_Model
+class MyModel
 {
 
     /* --------------------------------------------------------------
@@ -24,6 +28,12 @@ class MY_Model extends CI_Model
      * The database connection object. Will be set to the default
      * connection. This allows individual models to use different DBs
      * without overwriting CI's global $this->db connection.
+     */
+    public $_db;
+
+
+    /**
+     * The QueryBuilder Object.
      */
     public $_database;
 
@@ -99,13 +109,13 @@ class MY_Model extends CI_Model
      */
     public function __construct()
     {
-        parent::__construct();
 
-        $this->load->helper('inflector');
+        $this->inflector = helper('inflector');
 
+        $this->_set_database();
         $this->_fetch_table();
 
-        $this->_database = $this->db;
+        $this->_database = $this->_db->table($this->_table);
 
         array_unshift($this->before_create, 'protect_attributes');
         array_unshift($this->before_update, 'protect_attributes');
@@ -122,7 +132,7 @@ class MY_Model extends CI_Model
      */
     public function get($primary_value)
     {
-		return $this->get_by($this->primary_key, $primary_value);
+        return $this->get_by($this->primary_key, $primary_value);
     }
 
     /**
@@ -138,12 +148,11 @@ class MY_Model extends CI_Model
             $this->_database->where($this->soft_delete_key, (bool)$this->_temporary_only_deleted);
         }
 
-		$this->_set_where($where);
+        $this->_set_where($where);
 
         $this->trigger('before_get');
 
-        $row = $this->_database->get($this->_table)
-                        ->{$this->_return_type()}();
+        $row = $this->_database->get()->{$this->_return_type()}();
         $this->_temporary_return_type = $this->return_type;
 
         $row = $this->trigger('after_get', $row);
@@ -187,8 +196,7 @@ class MY_Model extends CI_Model
             $this->_database->where($this->soft_delete_key, (bool)$this->_temporary_only_deleted);
         }
 
-        $result = $this->_database->get($this->_table)
-                           ->{$this->_return_type(1)}();
+        $result = $this->_database->get()->{$this->_return_type(1)}();
         $this->_temporary_return_type = $this->return_type;
 
         foreach ($result as $key => &$row)
@@ -367,7 +375,7 @@ class MY_Model extends CI_Model
     {
         $where = func_get_args();
 
-	    $where = $this->trigger('before_delete', $where);
+        $where = $this->trigger('before_delete', $where);
 
         $this->_set_where($where);
 
@@ -438,9 +446,9 @@ class MY_Model extends CI_Model
 
     public function relate($row)
     {
-		if (empty($row))
+        if (empty($row))
         {
-		    return $row;
+            return $row;
         }
 
         foreach ($this->belongs_to as $key => $value)
@@ -856,7 +864,11 @@ class MY_Model extends CI_Model
     {
         if ($this->_table == NULL)
         {
-            $this->_table = plural(preg_replace('/(_m|_model)?$/', '', strtolower(get_class($this))));
+            $class_name = get_class($this);
+            $fetch = explode("\\", $class_name);
+            $model = $fetch[count($fetch)-1];
+            $tableau = str_replace("Model", "", $model);
+            $this->_table = strtolower($tableau);
         }
     }
 
@@ -901,8 +913,8 @@ class MY_Model extends CI_Model
         {
             $this->_database->where($params[0]);
         }
-    	else if(count($params) == 2)
-		{
+        else if(count($params) == 2)
+        {
             if (is_array($params[1]))
             {
                 $this->_database->where_in($params[0], $params[1]);    
@@ -911,11 +923,11 @@ class MY_Model extends CI_Model
             {
                 $this->_database->where($params[0], $params[1]);
             }
-		}
-		else if(count($params) == 3)
-		{
-			$this->_database->where($params[0], $params[1], $params[2]);
-		}
+        }
+        else if(count($params) == 3)
+        {
+            $this->_database->where($params[0], $params[1], $params[2]);
+        }
         else
         {
             if (is_array($params[1]))
@@ -929,12 +941,25 @@ class MY_Model extends CI_Model
         }
     }
 
+
+    private function _set_database()
+    {
+        if (!$this->_db)
+        {
+            $this->_db = db_connect();
+        }
+        else
+        {
+            $this->_db = db_reconnect();
+        }
+    }
+
     /**
      * Return the method name for the current return type
      */
     protected function _return_type($multi = FALSE)
     {
-        $method = ($multi) ? 'result' : 'row';
+        $method = ($multi) ? 'getResultArray' : 'getResult';
         return $this->_temporary_return_type == 'array' ? $method . '_array' : $method;
     }
 }
