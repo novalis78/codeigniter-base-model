@@ -224,7 +224,7 @@ class MyModel
             $data = $this->trigger('before_create', $data);
 
             $this->_database->insert($data);
-            $insert_id = $this->_database->insert_id();
+            $insert_id = $this->_db->insertID();
 
             $this->trigger('after_create', $insert_id);
 
@@ -356,11 +356,11 @@ class MyModel
 
         if ($this->soft_delete)
         {
-            $result = $this->_database->update($this->_table, array( $this->soft_delete_key => TRUE ));
+            $result = $this->_database->update(array( $this->soft_delete_key => TRUE ));
         }
         else
         {
-            $result = $this->_database->delete($this->_table);
+            $result = $this->_database->delete();
         }
 
         $this->trigger('after_delete', $result);
@@ -382,11 +382,11 @@ class MyModel
 
         if ($this->soft_delete)
         {
-            $result = $this->_database->update($this->_table, array( $this->soft_delete_key => TRUE ));
+            $result = $this->_database->update(array( $this->soft_delete_key => TRUE ));
         }
         else
         {
-            $result = $this->_database->delete($this->_table);
+            $result = $this->_database->delete();
         }
 
         $this->trigger('after_delete', $result);
@@ -405,11 +405,11 @@ class MyModel
 
         if ($this->soft_delete)
         {
-            $result = $this->_database->update($this->_table, array( $this->soft_delete_key => TRUE ));
+            $result = $this->_database->update(array( $this->soft_delete_key => TRUE ));
         }
         else
         {
-            $result = $this->_database->delete($this->_table);
+            $result = $this->_database->delete();
         }
 
         $this->trigger('after_delete', $result);
@@ -423,7 +423,7 @@ class MyModel
      */
     public function truncate()
     {
-        $result = $this->_database->truncate($this->_table);
+        $result = $this->_database->truncate();
 
         return $result;
     }
